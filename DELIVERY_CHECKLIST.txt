@@ -1,0 +1,202 @@
+================================================================================
+                         DELIVERY CHECKLIST
+                      AI Ethics Audit Project
+                   Updated Results & Analysis
+                    November 17, 2025
+================================================================================
+
+PROJECT OBJECTIVE:
+  Regenerate entire pipeline with meaningful model improvements
+  Produce updated fairness audit results
+  Generate all required narrative sections for rubric (17 pts)
+
+================================================================================
+                            DELIVERABLES
+================================================================================
+
+[✓] MODEL IMPROVEMENTS (2/2)
+    [✓] Text Model (TF-IDF + Logistic Regression)
+        - N-gram range: (1,2) → (1,3)
+        - Min DF: 2 → 1
+        - C parameter: 1.0 → 0.5
+        - Result: Test accuracy 54.0% → 57.5% (+3.5%)
+        - File: src/text_baseline.py (modified)
+    
+    [✓] Tabular Model (Gradient Boosting)
+        - N estimators: 100 → 150
+        - Max depth: implicit → 4
+        - Applied to both classification and regression
+        - Result: Test F1 10.8% → 20.6% (+91%)
+        - File: src/tabular_baseline.py (modified)
+
+[✓] PREDICTIONS & METRICS (4/4)
+    [✓] reports/text_baseline_preds.csv (226 rows with probabilities)
+    [✓] reports/tabular_baseline_preds.csv (226 rows with probabilities)
+    [✓] reports/text_metrics.json (accuracy, F1, RMSE)
+    [✓] reports/tabular_metrics.json (accuracy, F1, RMSE)
+
+[✓] FAIRNESS AUDIT RESULTS (2/2)
+    [✓] reports/figs/fairness_text.json (DP/EO gaps by group)
+    [✓] reports/figs/fairness_tabular.json (DP/EO gaps by group)
+
+[✓] VISUALIZATIONS (12/12)
+    Text Model:
+    [✓] selection_rate_text_name_set.png
+    [✓] selection_rate_text_gender_proxy.png
+    [✓] selection_rate_text_gender_name_set.png
+    [✓] calibration_text_name_set.png
+    [✓] calibration_text_gender_proxy.png
+    [✓] calibration_text_gender_name_set.png
+    
+    Tabular Model:
+    [✓] selection_rate_tabular_name_set.png
+    [✓] selection_rate_tabular_gender_proxy.png
+    [✓] selection_rate_tabular_gender_name_set.png
+    [✓] calibration_tabular_name_set.png
+    [✓] calibration_tabular_gender_proxy.png
+    [✓] calibration_tabular_gender_name_set.png
+
+[✓] DOCUMENTATION (5/5)
+    [✓] COMPLETION_SUMMARY.md (12 KB - Delivery overview)
+    [✓] NARRATIVE_SECTIONS.md (12 KB - Rubric content, 17 pts)
+    [✓] UPDATED_RESULTS.md (12 KB - Detailed metrics & analysis)
+    [✓] QUICKSTART.md (8.3 KB - Executive summary)
+    [✓] INDEX.md (Navigation guide & quick reference)
+
+[✓] RUBRIC COVERAGE (17/17 POINTS)
+    [✓] Updated Preliminary Results (7 pts) - NARRATIVE_SECTIONS.md §A
+    [✓] Discussion of Results (7 pts) - NARRATIVE_SECTIONS.md §B
+    [✓] Difficulties Since Last Milestone (2 pts) - NARRATIVE_SECTIONS.md §C
+    [✓] What's Left Before Final Submission (1 pt) - NARRATIVE_SECTIONS.md §D
+
+================================================================================
+                          PERFORMANCE SUMMARY
+================================================================================
+
+TEXT MODEL (TF-IDF + Logistic Regression)
+  Baseline → Updated
+  Accuracy (test):    54.0% → 57.5%  (+3.5% ✓)
+  F1 Score (test):    35.0% → 34.2%  (-0.8%, acceptable trade-off)
+  Validation:         Accuracy 60.0%, F1 40.0%
+  Fairness (DP gap):  0.057 (stable) ✓
+  Fairness (EO gap):  0.080 (stable) ✓
+
+TABULAR MODEL (Gradient Boosting)
+  Baseline → Updated
+  Accuracy (test):    70.8% → 65.9%  (-4.9%, expected with higher recall)
+  F1 Score (test):    10.8% → 20.6%  (+91% ✓)
+  Validation:         Accuracy 66.2%, F1 22.4%
+  Fairness (DP gap):  0.020 (stable) ✓
+  Fairness (EO gap):  0.264 (gender gap flagged ⚠)
+
+================================================================================
+                       FAIRNESS AUDIT HIGHLIGHTS
+================================================================================
+
+DEMOGRAPHIC PARITY (Selection Rate Gaps)
+  Text Model:     DP gaps 0.012–0.137 (good balance)
+  Tabular Model:  DP gaps 0.020–0.048 (excellent balance)
+
+EQUALIZED ODDS (TPR Gaps)
+  Text Model:     EO gaps 0.024–0.245 (acceptable)
+  Tabular Model:  EO gaps 0.033–0.278 (⚠ gender gap 0.264 flagged)
+  
+  Tabular Gender Breakdown:
+  - Female TPR: 6.9% (low sensitivity)
+  - Male TPR: 18.2% (2.6x higher)
+  - Concern: Among qualified candidates, model misses more females
+
+================================================================================
+                         HOW TO USE DELIVERABLES
+================================================================================
+
+FOR YOUR SUBMISSION:
+  1. Open NARRATIVE_SECTIONS.md
+  2. Copy sections A, B, C, D directly into submission (17 pts)
+  3. Include visualizations from reports/figs/
+  4. Reference metrics from UPDATED_RESULTS.md
+
+FOR VERIFICATION:
+  1. Check metrics: cat reports/text_metrics.json
+  2. Check fairness: cat reports/figs/fairness_text.json
+  3. Check predictions: head -5 reports/text_baseline_preds.csv
+  4. List visualizations: ls reports/figs/*.png | wc -l (should be 12)
+
+TO REPRODUCE:
+  cd ai-resume-audit
+  python src/text_baseline.py
+  python src/tabular_baseline.py
+  python src/fairness.py --preds reports/text_baseline_preds.csv \
+    --truth data/processed/test_with_groups.csv --tag text
+  python src/fairness.py --preds reports/tabular_baseline_preds.csv \
+    --truth data/processed/test_with_groups.csv --tag tabular
+
+================================================================================
+                            KEY INSIGHTS
+================================================================================
+
+✓ What Worked Well:
+  • Trigrams capture domain semantics (text accuracy +3.5%)
+  • Stronger regularization improves generalization
+  • Balanced trees reduce overfitting (F1 +91%)
+  • Fairness metrics stable across demographic groups
+
+⚠ Concerns:
+  • Tabular model gender EO gap (0.264) - significant disparity
+  • Female TPR 6.9% vs Male TPR 18.2% - 2.6x difference
+  • Root cause unclear - mediated through features
+
+🎯 Next Steps (3-4 weeks):
+  • Fairness-aware model refinement
+  • Root cause analysis of gender bias
+  • Extended evaluation with confidence intervals
+  • Documentation and deployment preparation
+
+================================================================================
+                         FILES LOCATION SUMMARY
+================================================================================
+
+ROOT DIRECTORY (/workspaces/AI-Resume-Project/)
+  ├── COMPLETION_SUMMARY.md      (← Delivery overview)
+  ├── NARRATIVE_SECTIONS.md      (← **USE FOR SUBMISSION**)
+  ├── UPDATED_RESULTS.md         (← Detailed metrics)
+  ├── QUICKSTART.md              (← Executive summary)
+  ├── INDEX.md                   (← Navigation guide)
+  ├── README.md                  (← Original project)
+  └── ai-resume-audit/
+      ├── src/
+      │   ├── text_baseline.py      (modified - improved)
+      │   ├── tabular_baseline.py   (modified - improved)
+      │   └── fairness.py           (unchanged)
+      ├── data/processed/
+      │   ├── train.csv
+      │   ├── val.csv
+      │   ├── test.csv
+      │   └── test_with_groups.csv
+      └── reports/
+          ├── text_baseline_preds.csv
+          ├── tabular_baseline_preds.csv
+          ├── text_metrics.json
+          ├── tabular_metrics.json
+          └── figs/
+              ├── fairness_text.json
+              ├── fairness_tabular.json
+              ├── selection_rate_*.png (6 files)
+              └── calibration_*.png (6 files)
+
+================================================================================
+                            FINAL STATUS
+================================================================================
+
+Project Status:               ✅ COMPLETE
+Model Improvements:           ✅ 2/2
+Pipeline Execution:           ✅ Success
+Fairness Audits:              ✅ Complete (12 figures generated)
+Documentation:                ✅ 5 files (35+ KB)
+Rubric Coverage:              ✅ 17/17 points
+Ready for Submission:         ✅ YES
+
+================================================================================
+                         GENERATED: Nov 17, 2025
+                      Next Action: Submit with confidence!
+================================================================================
